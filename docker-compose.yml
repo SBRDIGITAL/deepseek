@@ -1,0 +1,24 @@
+services:
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_NUM_PARALLEL=4    # Ограничение потоков CPU
+      - OLLAMA_GPU_LAYERS=0      # Полное отключение GPU
+      # - OLLAMA_DEBUG=false
+      # - OLLAMA_DISABLE_GPU_INFO=true  # новая опция в версии 0.6.5+
+    deploy:
+      resources:
+        reservations:
+          cpus: '4'             # Жесткое ограничение ядер
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  ollama_data:
